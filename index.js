@@ -84,7 +84,7 @@ const getListProducts = document.querySelector("#getListProducts");
 db.collection("products").orderBy('id').get().then(function(querySnapshot) {
     querySnapshot.forEach(function(doc) {
         getListProducts.innerHTML +=
-        "<td>"+ doc.data().id + "</td>" + "<td><img style='width: 50px; height: 50px' src='https://drive.google.com/thumbnail?id=${doc.data().img}&sz=w200-h200'>" + doc.data().img + "</td><td>" + doc.data().name + "</td><td>" + doc.data().price + "</td><td>" + doc.data().quantity + "</td><td>" + doc.data().type + "</td><td></td><td></td>" + "<td><a href='update_product.html'>Sửa</a></td>" + "<td><a href='delete_product.html'>Xóa</a></td>"
+        "<td>"+ doc.data().id + "</td><td>" + doc.data().name + "</td><td>" + doc.data().price + "</td><td>" + doc.data().quantity + "</td><td>" + doc.data().type + "</td>" + "<td><a href='update_product.html'>Sửa</a></td>" + "<td><a href='delete_product.html'>Xóa</a></td>"
     });
 });
 
