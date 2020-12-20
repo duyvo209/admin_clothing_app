@@ -79,6 +79,17 @@ db.collection("users").get().then(function(querySnapshot) {
 });
 // test.firestore.js
 
+const getListOrders = document.querySelector("#getListOrders");
+
+db.collection("orders").get().then(function(querySnapshot) {
+    querySnapshot.forEach(function(doc) {
+        console.log(doc.data())
+        getListOrders.innerHTML +=
+         "<td>" + doc.data().name + "</td><td>" + doc.data().carts.product.name + "</td><td>" + doc.data().phone + "</td><td>" + doc.data().address + "</td><td>" + doc.data().total + "</td><td>" + doc.data().status + "</td>"
+    });
+    console.log(getListOrders.innerHTML);
+});
+
 const updateForm = document.getElementById('update-form');
 
 let editStatus = false;
@@ -97,7 +108,7 @@ db.collection("products").orderBy('id').get().then(function(querySnapshot) {
         console.log(docProduct);
 
         getListProducts.innerHTML +=
-        "<td>"+ doc.data().id + "</td><td>" + doc.data().name + "</td><td>" + doc.data().price + "</td><td>" + doc.data().quantity + "</td><td>" + doc.data().type + "</td>" + `<td><button class='btn-update' data-id=${docProduct.id}>Sửa</button></td>` + `<td><button class='btn-delete' data-id=${docProduct.id}>Xóa</button></td>`
+        "<?>"+ doc.data().id + "</?><td>" + doc.data().name + "</td><td>" + doc.data().price + "</td><td>" + doc.data().quantity + "</td><td>" + doc.data().type + "</td>" + `<td><button class='btn-update' data-id=${docProduct.id}>Sửa</button></td>` + `<td><button class='btn-delete' data-id=${docProduct.id}>Xóa</button></td>`
         
         const btnUpdate = document.querySelectorAll('.btn-update');
         btnUpdate.forEach(btn => {
