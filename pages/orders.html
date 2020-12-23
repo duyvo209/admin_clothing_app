@@ -79,7 +79,7 @@
             <ul>
                 <li><a href="customers.html">Khách hàng</a></li>
                 <li><a href="products.html">Danh mục sản phẩm</a></li>
-                <li><a href="#">Đơn đặt hàng</a></li>
+                <li><a href="orders.html">Đơn đặt hàng</a></li>
                 <li style="border-bottom: black 1px solid"><a href="#">Báo cáo doanh thu</a></li>
             </ul>
         </div>
@@ -89,7 +89,7 @@
 		<table class="table table-hover" style="margin-left: 250px !important;">
 			  <thead>
 			  	<tr>
-					<th colspan="10">
+					<th colspan="7">
 						<p style="text-align: center; letter-spacing: 10px; text-transform: uppercase; display: block; width: 100%; margin: auto; font-size: 28px;">Đơn đặt hàng</p>
 					</th>
 				</tr>
@@ -107,22 +107,22 @@
 			   <tbody id="getListOrders">
 			     
 			    <tr>
-			      	<th scope="row"><?php echo $row['id']; ?></th>
-			      	<td><?php echo $row['hoten']; ?></td>
-			      	<td><?php echo $row['sanpham']; ?></td>
-			      	<td><?php echo $row['ngaymua']; ?></td>
+			      	<th scope="row"></th>
+			      	<td></td>
+			      	<td></td>
+			      	<td></td>
 			      	<!-- <td><a href="mailto: <?php echo $row['email']; ?>"><?php echo $row['email']; ?></a></td> -->
-			      	<td><?php echo $row['sodienthoai']; ?></td>
-			      	<td><?php echo $row['diachi']; ?></td>
+			      	<td></td>
+			      	<td></td>
 			      	<!-- <td><?php echo $row['ghichu']; ?></td>	 -->
-			      	<td><?php echo number_format($row['tongtien'],0,".",".")." "."đ";  ?></td>
+			      	<td></td>
 			     	<td>
-			     		<select id="status_<?php echo $row['id']; ?>" onchange="">
+			     		<!-- <select id="status_<?php echo $row['id']; ?>" onchange="">
 			     			<option <?php if($row['trangthai'] == 0){ ?> selected="selected" <?php } ?> value="0">Chờ xác nhận</option>
 			     			<option <?php if($row['trangthai'] == 1){ ?> selected="selected" <?php } ?> value="1">Chờ lấy hàng</option>	
 			     			<option <?php if($row['trangthai'] == 2){ ?> selected="selected" <?php } ?> value="2">Đang giao hàng</option>	
 			     			<option <?php if($row['trangthai'] == 3){ ?> selected="selected" <?php } ?> value="3">Đã giao hàng</option>	
-			     		</select>
+			     		</select> -->
 			     	</td>
 			    </tr>
 			
