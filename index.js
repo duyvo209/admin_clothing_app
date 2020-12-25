@@ -39,38 +39,46 @@ db.collection("users").get().then(function(querySnapshot) {
 });
 // test.firestore.js
 
-function handleChageStatus(userId, thisSelect) {
-    console.log(userId)
+function handleChageStatus(id, thisSelect) {
+    console.log(id)
     const statusValue = thisSelect.value;
-    console.log(statusValue)
+    console.log(statusValue)   
+    updateStatusOrders(id, statusValue)
 }
 
-//zaconst updateStatusOrders = (userId, statusValue) => db.collection("orders").doc(userId).update(statusValue);
-
+const updateStatusOrders = (id, statusValue) => db.collection("orders").doc(id).update({status: Number(statusValue)});
 
 const getListOrders = document.querySelector("#getListOrders");
 
-function updateDataIntoTable(data){
-    const statusName = ['Cancel','Ordered', 'Received']
+function getListDataIntoTable(data, id){
+    const statusName = ['Chờ xác nhận','Đã xác nhận', 'Đang vận chuyển', 'Đã giao hàng'];
     getListOrders.innerHTML +=
-    "<td>" + data.userId + "</td><td>" + data.name + "</td><td>" 
-    + data.carts.map(item => item.product.name) + "</td><td>" 
-    + data.phone + "</td><td>" + data.address
-     + "</td><td>" + data.total + "</td><td>" 
-     + `<select key='${data.userId}' onchange="handleChageStatus('${data.userId}', this)" class="select-status">
-            <option ${data.status === 0 ? 'selected' : ''} value='0'>Cancel</option>
-            <option ${data.status === 1 ? 'selected' : ''} value='1'>Ordered</option>
-            <option ${data.status === 2 ? 'selected' : ''} value='2'>Received</option> 
+    "<td>" + id + "</td><td>" + data.name + "</td><td>" 
+    + data.carts.map(item => item.product.name + " (" + item.quantity + ")") + "</td><td>" 
+    + Date(data.dateTime.seconds * 1000).slice(4,21) + "</td><td>" 
+    + data.phone + "</td><td>" + data.address + "</td><td>" 
+    + data.total + " $" + "</td><td>" 
+    + `<select key='${id}' onchange="handleChageStatus('${id}', this)" class="select-status">
+            <option ${data.status === 0 ? 'selected' : ''} value='0'>Chờ xác nhận</option>
+            <option ${data.status === 1 ? 'selected' : ''} value='1'>Đã xác nhận</option>
+            <option ${data.status === 2 ? 'selected' : ''} value='2'>Đang vận chuyển</option>
+            <option ${data.status === 3 ? 'selected' : ''} value='3'>Đã giao hàng</option> 
      </select>` + "</td>";
+
+    //  const updateStatusOrdersFirebase = document.querySelectorAll('.class-status'); 
+    //  updateStatusOrdersFirebase.forEach(btn => {
+    //     btn.addEventListener('onChange', (e) => {
+    //         updateStatusOrders(e.target.dataset.id)
+    //     })
+    // })
 
 }
 
 
-db.collection("orders").get().then(function(querySnapshot) {
+db.collection("orders").orderBy('dateTime', 'desc').get().then(function(querySnapshot) {
     querySnapshot.forEach(function(doc) {
-        //console.log(doc.data())
-        updateDataIntoTable(doc.data())
-
+        console.log(doc.data());
+        getListDataIntoTable(doc.data(), doc.id)
     });
     console.log(getListOrders.innerHTML);
 });
