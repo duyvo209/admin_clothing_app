@@ -40,9 +40,9 @@ db.collection("users").get().then(function(querySnapshot) {
 // test.firestore.js
 
 function handleChageStatus(id, thisSelect) {
-    console.log(id)
+    // console.log(id)
     const statusValue = thisSelect.value;
-    console.log(statusValue)   
+    // console.log(statusValue)   
     updateStatusOrders(id, statusValue)
 }
 
@@ -64,24 +64,29 @@ function getListDataIntoTable(data, id){
             <option ${data.status === 2 ? 'selected' : ''} value='2'>Đang vận chuyển</option>
             <option ${data.status === 3 ? 'selected' : ''} value='3'>Đã giao hàng</option> 
      </select>` + "</td>";
-
-    //  const updateStatusOrdersFirebase = document.querySelectorAll('.class-status'); 
-    //  updateStatusOrdersFirebase.forEach(btn => {
-    //     btn.addEventListener('onChange', (e) => {
-    //         updateStatusOrders(e.target.dataset.id)
-    //     })
-    // })
-
 }
-
 
 db.collection("orders").orderBy('dateTime', 'desc').get().then(function(querySnapshot) {
     querySnapshot.forEach(function(doc) {
-        console.log(doc.data());
+        // console.log(doc.data());
         getListDataIntoTable(doc.data(), doc.id)
     });
-    console.log(getListOrders.innerHTML);
 });
+
+const getListSales = document.querySelector("#getListSales");
+
+db.collection("orders").get().then(function(querySnapshot) {
+    querySnapshot.forEach(function(doc) {
+        console.log(doc.data())
+        getListSales.innerHTML += 
+        "<td>" + doc.data().carts.map(item => item.product.name) + "</td>"
+        + "<td>" + doc.data().carts.map(item => item.product.price) + "</td>"
+        + "<td>" + doc.data().carts.map(item => item.quantity) + "</td>"
+        + "<td>" + doc.data().carts.map(item => item.product.type) + "</td>"
+        + "<td>" + doc.data().total + " $" + "</td>";
+    });
+});
+
 
 
 const updateForm = document.getElementById('update-form');

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .hehe{
+			color: #fff;
+			margin:8px 0;
+			border: none;			
+			width: 450px;
+			height: 55px;	
+			font-weight: 500;	
+			position: relative;
+			z-index: 1;
+			transition: all 0.3s ease;
+			text-transform: uppercase;
+		}
+		.hehe:before{
+			content: "";
+			position: absolute;
+			z-index: -1;
+			background-color: #000;
+			right: 0;
+			top: 0;
+			height: 100%;
+			width: 100%;
+			transition: all 0.3s ease;
+
+		}
+		.hehe:hover:before{
+			height: 0;
+		}
+		.hehe:hover{
+			color: #000;
+			outline: none;
+		}
+    </style>
+</head>
+<body>
+    <button class="hehe">Hehehe</button>
+</body>
+</html>
