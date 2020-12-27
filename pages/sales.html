@@ -106,19 +106,7 @@
 			<tr>
 				<th colspan="5">
 					 <p style="text-align: center; margin-bottom: 0">
-                         <!-- <select id="month" onchange="Month()" style="width: 25%; height: 40px;">
-						 	<?php 
-						 		for($i=1;$i<=12;$i++){ ?>
-						 			<option 
-						 				<?php if($month == $i){ ?>
-						 				selected = "selected"
-						 				<?php } ?>
-						 				value= "<?php echo $i;?>">Tháng <?php echo $i ?>
-						 			</option>
-
-						 	<?php } ?>
-                         </select> -->
-                         <select name="" id="" style="width: 25%; height: 40px;">
+                         <select onchange="Month()" id="selectMonth" style="width: 25%; height: 40px;">
                              <option value="1">Tháng 1</option>
                              <option value="2">Tháng 2</option>
                              <option value="3">Tháng 3</option>
@@ -145,19 +133,11 @@
 		    </tr>
 		</thead>
 		<tbody id="getListSales">
-			
-		    <tr>
-		      <!-- <td><?php echo $row['name']?></td>
-		      <td><?php $price = $row['price']; echo number_format("$price",3,".",".")." "."đ";?></td>
-		      <td><?php echo $row['amount']?></td>
-		      <td><?php echo $row['loai']?></td>
-		      <td><?php $totalid = $row['revenue']; $total+=$totalid; echo number_format("$totalid",3,".",".")." "."đ"; ?></td> -->
-		    </tr>
-		
-			<tr>
-				<th colspan="5" style="font-size: 20px;">Tổng doanh thu: <?php if($total!=0){echo number_format("$total",3,".",".")." "."đ";}?></th>
-			</tr>
-		</tbody>
+			<tr></tr>
+        </tbody>
+        <tr>
+            <th colspan="5" id="">Tổng doanh thu: <span id="total"></span></th>
+        </tr>
     </table>
     </div>
     </div>
@@ -165,10 +145,16 @@
 
 
 <script type="text/javascript">
+
+    var a = location.search.split('month=')[1]
+    if(a){
+        var months = document.getElementById('selectMonth');
+		months.selectedIndex = Number(a) - 1;
+    }
 	function Month(){
-		var months = document.getElementById('month');
+		var months = document.getElementById('selectMonth');
 		var select= months.options[months.selectedIndex].value;
-		window.location.href = 'admin.php?view=sales&month='+select;
+		window.location.href = 'sales.html?month='+select;
 	}
 </script>
 

@@ -51,11 +51,21 @@ const updateStatusOrders = (id, statusValue) => db.collection("orders").doc(id).
 const getListOrders = document.querySelector("#getListOrders");
 
 function getListDataIntoTable(data, id){
+    const day = data.dateTime.toDate().getDate()
+    const month = data.dateTime.toDate().getMonth()
+    const year = data.dateTime.toDate().getFullYear()
+    const hours = data.dateTime.toDate().getHours()
+    const minutes = data.dateTime.toDate().getMinutes()
+
+    const date = day + "-" + month + "-" + year + " " + hours + ":" + minutes
+
+
+
     const statusName = ['Chờ xác nhận','Đã xác nhận', 'Đang vận chuyển', 'Đã giao hàng'];
     getListOrders.innerHTML +=
     "<td>" + id + "</td><td>" + data.name + "</td><td>" 
     + data.carts.map(item => item.product.name + " (" + item.quantity + ")") + "</td><td>" 
-    + Date(data.dateTime.seconds * 1000).slice(4,21) + "</td><td>" 
+    + date + "</td><td>" 
     + data.phone + "</td><td>" + data.address + "</td><td>" 
     + data.total + " $" + "</td><td>" 
     + `<select key='${id}' onchange="handleChageStatus('${id}', this)" class="select-status">
@@ -75,19 +85,92 @@ db.collection("orders").orderBy('dateTime', 'desc').get().then(function(querySna
 
 const getListSales = document.querySelector("#getListSales");
 
+
 db.collection("orders").get().then(function(querySnapshot) {
+    let data = [];
+    let newData = [];
+    let selectMonth = 1;
+    if(Number(document.getElementById('selectMonth').value)) {
+        selectMonth = Number(document.getElementById('selectMonth').value)
+    }
+    
     querySnapshot.forEach(function(doc) {
-        console.log(doc.data())
-        getListSales.innerHTML += 
-        "<td>" + doc.data().carts.map(item => item.product.name) + "</td>"
-        + "<td>" + doc.data().carts.map(item => item.product.price) + "</td>"
-        + "<td>" + doc.data().carts.map(item => item.quantity) + "</td>"
-        + "<td>" + doc.data().carts.map(item => item.product.type) + "</td>"
-        + "<td>" + doc.data().total + " $" + "</td>";
+        if (doc.data().status == 3) { 
+            doc.data().carts.map((value,i ) => {
+                console.log(doc.data().dateTime.toDate().getMonth());
+                const dt = {
+                    name: value.product.name,
+                    price:  value.product.price,
+                    qty: value.quantity,
+                    type: value.product.type,
+                    date: doc.data().dateTime.toDate().getMonth()
+                }
+                if(doc.data().dateTime.toDate().getMonth() == selectMonth) {
+                    data.push(dt);
+                }
+                
+            })
+           
+        }  
     });
+    console.log(data);
+    data.map(value => {
+        let exist = -1;
+        for(let i in newData) {
+            if(String(newData[i].name) == String(value.name)) {
+                exist = i;
+            } 
+        }
+        
+        if(exist == -1) {
+            const dt = {
+                name: value.name,
+                price:  value.price,
+                qty: value.qty,
+                type: value.type,
+                // date:  value.date
+            }
+            newData.push(dt);
+           
+        } 
+
+        else {
+            const dt = {
+                name: value.name,
+                price:  value.price,
+                qty: newData[exist].qty + value.qty,
+                type: value.type,
+                // date: value.date
+            }
+
+            newData[exist] = dt;
+        }
+        
+    })
+
+
+    console.log(newData);
+    var total = 0;
+    newData.map(value => {
+        total += value.price * value.qty;
+        getListSales.innerHTML += 
+        "<td>" + value.name + "</td>"
+        + "<td>" + value.price + " $" + "</td>"
+        + "<td>" + value.qty + "</td>"
+        + "<td>" + value.type + "</td>"
+        + "<td>" + value.price * value.qty + " $" + "</td>";
+    });
+    document.getElementById('total').innerHTML = total + " $";
 });
 
+// var url_string = document.URL; 
+// var url = new URL(url_string);
+// var month = url.searchParams.get("month");
+// console.log(month);
 
+// var selectMonth = document.getElementById("selectMonth");
+// var month = selectMonth.options[selectMonth.selectIndex].value;
+// window.location.href = 'sales.html?selectMonth='+month;
 
 const updateForm = document.getElementById('update-form');
 
@@ -98,6 +181,7 @@ const updateData = (id, updateData) => db.collection('products').doc(id).update(
 
 const deleteData = id => db.collection('products').doc(id).delete();
 
+
 const getListProducts = document.querySelector("#getListProducts");
 
 db.collection("products").orderBy('id').get().then(function(querySnapshot) {
@@ -107,7 +191,7 @@ db.collection("products").orderBy('id').get().then(function(querySnapshot) {
         console.log(docProduct);
 
         getListProducts.innerHTML +=
-        "<td>"+ doc.data().id + "</td><td>" + doc.data().name + "</td><td>" + doc.data().price + "</td><td>" + doc.data().quantity + "</td><td>" + doc.data().type + "</td>" + `<td><button class='btn-update' data-id=${docProduct.id}>Sửa</button></td>` + `<td><button class='btn-delete' data-id=${docProduct.id}>Xóa</button></td>`
+        "<td>"+ doc.data().id + "</td><td>" + doc.data().name + "</td><td>" + doc.data().price + "</td><td>" + doc.data().quantity + "</td><td>" + doc.data().type + "</td>" + `<td><button style='width: 50px; border: none; background: transparent; color: blue' class='btn-update' data-id=${docProduct.id}>Sửa</button></td>` + `<td><button style='width: 50px; border: none; background: transparent; color: red' class='btn-delete' data-id=${docProduct.id}>Xóa</button></td>`
         
         const btnUpdate = document.querySelectorAll('.btn-update');
         btnUpdate.forEach(btn => {
@@ -145,6 +229,23 @@ updateForm.addEventListener('submit', async (e) => {
     const price = updateForm['gia'];
     const desc = updateForm['mota'];
     const image = updateForm['anh'];
+
+    // try {
+    //     if (editStatus) {
+    //         await updateData (id, {
+    //             id: id.value,
+    //             name: name.value,
+    //             quantity: quantity.value,
+    //             type: type.value,
+    //             price: price.value,
+    //             desc: desc.value,
+    //             image: image.value
+    //         })
+    //         editStatus =  false;
+    //     }
+    // } catch (error) {
+    //     console.log(error);
+    // }
 
     // try {
     //     if (!editStatus) {
