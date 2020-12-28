@@ -1,6 +1,6 @@
 // Initialize Cloud Firestore through Firebase
 var db = firebase.firestore();
-
+var id_doc_update = '';
 function addData() {
     var inputID = Number(document.getElementById("id").value);
     var inputProductName = document.getElementById("tensanpham").value;
@@ -113,7 +113,7 @@ db.collection("orders").get().then(function(querySnapshot) {
            
         }  
     });
-    console.log(data);
+    // console.log(data);
     data.map(value => {
         let exist = -1;
         for(let i in newData) {
@@ -128,7 +128,6 @@ db.collection("orders").get().then(function(querySnapshot) {
                 price:  value.price,
                 qty: value.qty,
                 type: value.type,
-                // date:  value.date
             }
             newData.push(dt);
            
@@ -140,7 +139,6 @@ db.collection("orders").get().then(function(querySnapshot) {
                 price:  value.price,
                 qty: newData[exist].qty + value.qty,
                 type: value.type,
-                // date: value.date
             }
 
             newData[exist] = dt;
@@ -149,7 +147,7 @@ db.collection("orders").get().then(function(querySnapshot) {
     })
 
 
-    console.log(newData);
+    // console.log(newData);
     var total = 0;
     newData.map(value => {
         total += value.price * value.qty;
@@ -163,21 +161,27 @@ db.collection("orders").get().then(function(querySnapshot) {
     document.getElementById('total').innerHTML = total + " $";
 });
 
-// var url_string = document.URL; 
-// var url = new URL(url_string);
-// var month = url.searchParams.get("month");
-// console.log(month);
 
-// var selectMonth = document.getElementById("selectMonth");
-// var month = selectMonth.options[selectMonth.selectIndex].value;
-// window.location.href = 'sales.html?selectMonth='+month;
 
-const updateForm = document.getElementById('update-form');
+// const updateForm = document.getElementById('update-form');
 
 let editStatus = false;
 
 const getUpdate = id => db.collection('products').doc(id).get();
-const updateData = (id, updateData) => db.collection('products').doc(id).update(updateData);
+// const updateData = (id, updateData) => db.collection('products').doc(id).update(updateData);
+
+const updateData = (id) =>{
+    console.log(id);
+    db.collection('products').doc(id_doc_update).update({
+        id: Number(document.getElementById("id").value),
+        name: document.getElementById("tensanpham").value,
+        quantity: Number(document.getElementById("soluong").value),
+        type: document.getElementById("loai").value,
+        price: Number(document.getElementById("gia").value),
+        description: document.getElementById("mota").value,
+        img: document.getElementById("anh").value
+    });
+}
 
 const deleteData = id => db.collection('products').doc(id).delete();
 
@@ -188,27 +192,36 @@ db.collection("products").orderBy('id').get().then(function(querySnapshot) {
     querySnapshot.forEach(function(doc) {
         const docProduct = doc.data();
         docProduct.id = doc.id;
-        console.log(docProduct);
+        console.log(docProduct.id);
 
         getListProducts.innerHTML +=
-        "<td>"+ doc.data().id + "</td><td>" + doc.data().name + "</td><td>" + doc.data().price + "</td><td>" + doc.data().quantity + "</td><td>" + doc.data().type + "</td>" + `<td><button style='width: 50px; border: none; background: transparent; color: blue' class='btn-update' data-id=${docProduct.id}>Sửa</button></td>` + `<td><button style='width: 50px; border: none; background: transparent; color: red' class='btn-delete' data-id=${docProduct.id}>Xóa</button></td>`
+        "<td>"+ doc.data().id + 
+        "</td><td>" + doc.data().name + 
+        "</td><td>" + doc.data().price + " $" + 
+        "</td><td>" + doc.data().quantity + 
+        "</td><td>" + doc.data().type + 
+        "</td><td>" + doc.data().description +
+        "</td>" + `<td><button  style='width: 50px; border: none; background: transparent; color: blue' class='btn-update' onclick='openModel("${docProduct.id}")'  data-id=${docProduct.id}>Sửa</button></td>` + `<td><button style='width: 50px; border: none; background: transparent; color: red' class='btn-delete' data-id=${docProduct.id}>Xóa</button></td>`
         
-        const btnUpdate = document.querySelectorAll('.btn-update');
-        btnUpdate.forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const doc = await getUpdate(e.target.dataset.id);
-                const updateProduct = doc.data();
-                console.log(doc.data())
-                window.location.href = 'update_product.html';
-                updateForm['id'].value = updateProduct.id;
-                updateForm['tensanpham'].value = updateProduct.name;
-                updateForm['soluong'].value = updateProduct.quantity;
-                updateForm['loai'].value = updateProduct.type;
-                updateForm['gia'].value = updateProduct.price;
-                updateFrom['mota'].value = updateProduct.desc;
-                updateForm['anh'].value = updateProduct.img;
-            })
-        })
+        // const btnUpdate = document.querySelectorAll('.btn-update');
+        // btnUpdate.forEach(btn => {
+        //     btn.addEventListener('click', async (e) => {
+        //         id_doc_update = docProduct.id;
+        //         $('#update-modal').modal();
+        //         const doc = await getUpdate(e.target.dataset.id);
+        //         const updateProduct = doc.data();
+        //         // console.log(doc.data())
+        //         console.log(updateProduct);
+
+        //         document.getElementById("id").value = updateProduct.id
+        //         document.getElementById("tensanpham").value = updateProduct.name;
+        //         document.getElementById("soluong").value = updateProduct.quantity;
+        //         document.getElementById("loai").value = updateProduct.type;
+        //         document.getElementById("gia").value = updateProduct.price;
+        //         document.getElementById("mota").value = updateProduct.description;
+        //         document.getElementById("anh").value = updateProduct.img;
+        //     })
+        // })
 
         const btnDelete = document.querySelectorAll('.btn-delete');
         btnDelete.forEach(btn => {
@@ -219,53 +232,12 @@ db.collection("products").orderBy('id').get().then(function(querySnapshot) {
     });
 });
 
-updateForm.addEventListener('submit', async (e) => {
-    e.preventDefault;
+function openModel(doc_id){
+    console.log(doc_id);
+    id_doc_update = doc_id;
+    $('#update-modal').modal();
+}
 
-    const id = updateForm['id'];
-    const name = updateForm['tensanpham'];
-    const quantity = updateForm['soluong'];
-    const type = updateForm['loai'];
-    const price = updateForm['gia'];
-    const desc = updateForm['mota'];
-    const image = updateForm['anh'];
-
-    // try {
-    //     if (editStatus) {
-    //         await updateData (id, {
-    //             id: id.value,
-    //             name: name.value,
-    //             quantity: quantity.value,
-    //             type: type.value,
-    //             price: price.value,
-    //             desc: desc.value,
-    //             image: image.value
-    //         })
-    //         editStatus =  false;
-    //     }
-    // } catch (error) {
-    //     console.log(error);
-    // }
-
-    // try {
-    //     if (!editStatus) {
-    //         await addData(id.value, name.value, quantity.value, type.value, price.value, desc.value, image.value);
-    //     } else {
-    //         await updateData(id, {
-    //             id: id.value, 
-    //             name: name.value, 
-    //             quantity: quantity.value, 
-    //             type: type.value, 
-    //             price: price.value, 
-    //             desc: desc.value, 
-    //             image: image.value
-    //         })
-    //         editStatus= false;
-    //     }
-    // } catch (error) {
-    //     console.log(error);
-    // }
-});
 
 
 
